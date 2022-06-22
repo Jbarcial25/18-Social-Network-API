@@ -5,8 +5,8 @@ const userController = {
   getUsers(req, res) {
     User.find()
       .select('-__v')
-      .then((dbUserData) => {
-        res.json(dbUserData);
+      .then((userData) => {
+        res.json(userData);
       })
       .catch((err) => {
         console.log(err);
@@ -19,11 +19,11 @@ const userController = {
       .select('-__v')
       .populate('friends')
       .populate('thoughts')
-      .then((dbUserData) => {
-        if (!dbUserData) {
-          return res.status(404).json({ message: 'Uh-oh, there were no user with this id!' });
+      .then((userData) => {
+        if (!userData) {
+          return res.status(404).json({ message: 'There are no user with this id!' });
         }
-        res.json(dbUserData);
+        res.json(userData);
       })
       .catch((err) => {
         console.log(err);
@@ -33,8 +33,8 @@ const userController = {
   // create a new user
   createUser(req, res) {
     User.create(req.body)
-      .then((dbUserData) => {
-        res.json(dbUserData);
+      .then((userData) => {
+        res.json(userData);
       })
       .catch((err) => {
         console.log(err);
@@ -53,11 +53,11 @@ const userController = {
         new: true,
       }
     )
-      .then((dbUserData) => {
-        if (!dbUserData) {
+      .then((userData) => {
+        if (!userData) {
           return res.status(404).json({ message: 'Uh-oh, there were no user with this id!' });
         }
-        res.json(dbUserData);
+        res.json(userData);
       })
       .catch((err) => {
         console.log(err);
@@ -68,13 +68,13 @@ const userController = {
   // delete user and related thoughts
   deleteUser(req, res) {
     User.findOneAndDelete({ _id: req.params.userId })
-      .then((dbUserData) => {
-        if (!dbUserData) {
+      .then((userData) => {
+        if (!userData) {
           return res.status(404).json({ message: 'Uh-oh, there were no user with this id!' });
         }
 
         //Deletes the thought of related to the user
-        return Thought.deleteMany({ _id: { $in: dbUserData.thoughts } });
+        return Thought.deleteMany({ _id: { $in: userData.thoughts } });
       })
       .then(() => {
         res.json({ message: 'User and related thoughts was successfully deleted deleted!' });
@@ -88,11 +88,11 @@ const userController = {
   // add friend to friend list
   addFriend(req, res) {
     User.findOneAndUpdate({ _id: req.params.userId }, { $addToSet: { friends: req.params.friendId } }, { new: true })
-      .then((dbUserData) => {
-        if (!dbUserData) {
+      .then((userData) => {
+        if (!userData) {
           return res.status(404).json({ message: 'Uh-oh, there were no user with this id!' });
         }
-        res.json(dbUserData);
+        res.json(userData);
       })
       .catch((err) => {
         console.log(err);
@@ -102,11 +102,11 @@ const userController = {
   // remove friend from friend list
   removeFriend(req, res) {
     User.findOneAndUpdate({ _id: req.params.userId }, { $pull: { friends: req.params.friendId } }, { new: true })
-      .then((dbUserData) => {
-        if (!dbUserData) {
+      .then((userData) => {
+        if (!userData) {
           return res.status(404).json({ message: 'Uh-oh, there were no user with this id!' });
         }
-        res.json(dbUserData);
+        res.json(userData);
       })
       .catch((err) => {
         console.log(err);
